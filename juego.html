@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia de 6ºB - ¡El Reto de los Profes!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #fafafa;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+        .game-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e9d5ff;
+        }
+        .gradient-title {
+            background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .screen {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #c084fc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #f472b6;
+            transform: scale(1.05);
+        }
+        .btn-volver {
+            background-color: #60a5fa;
+        }
+        .btn-volver:hover {
+            background-color: #2563eb;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            border: 2px solid #e9d5ff;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .option-btn:hover {
+            background-color: #c084fc;
+            color: white;
+            border-color: #c084fc;
+        }
+        .progress-bar {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        #resultado-texto {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    
+    <!-- PANTALLA 1: INICIO -->
+    <div id="screen-start" class="screen active">
+        <h1 class="gradient-title">🧠 Las 7 Preguntas del Examen</h1>
+        <p style="font-size: 1.1rem; color: #4b5563;">
+            ¡Bienvenidos profesores! Ha llegado el momento de comprobar si recordáis los mejores momentos, frases y secretos de vuestros alumnos de 6ºB.
+        </p>
+        <p style="font-size: 1.5rem; margin: 20px 0;">🕵️‍♂️ ¿Seréis capaces de sacar un Excelente?</p>
+        <button class="btn" onclick="empezarJuego()">Empezar el Reto</button>
+        <br><br>
+        <a href="Todos.html" class="btn btn-volver" style="font-size: 0.9rem; padding: 8px 16px;">Volver a la Web Principal</a>
+    </div>
+
+    <!-- PANTALLA 2: PREGUNTAS -->
+    <div id="screen-question" class="screen">
+        <div class="progress-bar" id="progreso">Pregunta 1 de 7</div>
+        <h2 id="pregunta-texto" style="color: #1e40af; min-height: 60px;">Aquí va la pregunta</h2>
+        <div class="options-grid" id="opciones-contenedor">
+            <!-- JavaScript meterá los botones aquí -->
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: RESULTADO FINAL -->
+    <div id="screen-result" class="screen">
+        <h1 class="gradient-title">📊 Calificación Final</h1>
+        <div id="resultado-texto">Tu nota es...</div>
+        <button class="btn" onclick="reiniciarJuego()">Intentar de Nuevo 🔄</button>
+        <br><br>
+        <a href="Todos.html" class="btn btn-volver">Regresar con la Clase ❤️</a>
+    </div>
+
+</div>
+
+<script>
+    // Listado con las 7 preguntas exactas y sin emojis en las incorrectas
+    const preguntas = [
+        {
+            pregunta: "Pregunta 1 (Anécdota): Cuando llega el momento de corregir los exámenes en clase con bolígrafo, ¿cuál es el mítico grito de guerra que suena con fuerza?",
+            opciones: ["¡Silencio, por favor!", "¡Put your red up!", "¡A guardar los libros!", "¡Todos listos!"],
+            correctas: [1] // Solo B
+        },
+        {
+            pregunta: "Pregunta 2 (Anécdota): ¿Qué maestra sustituta dejó a la clase con la boca abierta imitando a la perfección la voz de Alexa y de Google Maps?",
+            opciones: ["Seño Cati", "Seño Lola", "Seño Cristina", "Seño Paula"],
+            correctas: [2] // Solo C
+        },
+        {
+            pregunta: "Pregunta 3 (Clase): Según los registros oficiales de 6ºB, ¿quién grita más fuerte de toda la clase? (¡Hay dos respuestas correctas!)",
+            opciones: ["Sofía", "Manuel", "Rachid", "Salma"],
+            correctas: [0, 1] // A o B son válidas
+        },
+        {
+            pregunta: "Pregunta 4 (Clase): ¿Quién es oficialmente la persona más alta de nuestra clase?",
+            opciones: ["Ángela", "Myriam", "Ainara", "Patricia"],
+            correctas: [1] // Solo B
+        },
+        {
+            pregunta: "Pregunta 5 (Clase): ¿Quién es la persona más baja de 6ºB? (¡Aquí también valen dos opciones!)",
+            opciones: ["Rachid", "Hugo", "Adnan", "Reda"],
+            correctas: [0, 1] // A o B son válidas
+        },
+        {
+            pregunta: "Pregunta 6 (Broma): ¿Quién es el más millonario de la clase y tiene el emoji más gamberro en la orla?",
+            opciones: ["Neymar", "Martín", "Diego", "Teo"],
+            correctas: [2] // Solo C
+        },
+        {
+            pregunta: "Pregunta 7 (Anécdota): ¿Qué mítica frase dice siempre la seño Cati al sonar el timbre del final de las clases?",
+            opciones: ["¡Hasta mañana!", "¡Buen viaje!", "¡Recogiendo, que es gerundio!", "¡Silencio en los pasillos!"],
+            correctas: [2] // Solo C
+        }
+    ];
+
+    let preguntaActual = 0;
+    let aciertos = 0;
+
+    function empezarJuego() {
+        preguntaActual = 0;
+        aciertos = 0;
+        cambiarPantalla('screen-question');
+        mostrarPregunta();
+    }
+
+    function cambiarPantalla(idPantalla) {
+        document.querySelectorAll('.screen').forEach(pantalla => {
+            pantalla.classList.remove('active');
+        });
+        document.getElementById(idPantalla).classList.add('active');
+    }
+
+    function mostrarPregunta() {
+        const datos = preguntas[preguntaActual];
+        document.getElementById('progreso').innerText = `Pregunta ${preguntaActual + 1} de ${preguntas.length}`;
+        document.getElementById('pregunta-texto').innerText = datos.pregunta;
+        
+        const contenedor = document.getElementById('opciones-contenedor');
+        contenedor.innerHTML = '';
+
+        datos.opciones.forEach((opcion, indice) => {
+            const boton = document.createElement('button');
+            boton.className = 'option-btn';
+            boton.innerText = opcion;
+            boton.onclick = () => verificarRespuesta(indice);
+            contenedor.appendChild(boton);
+        });
+    }
+
+    function verificarRespuesta(indiceSeleccionado) {
+        // Comprueba si el índice pulsado está en la lista de respuestas correctas de esa pregunta
+        if (preguntas[preguntaActual].correctas.includes(indiceSeleccionado)) {
+            aciertos++;
+        }
+
+        preguntaActual++;
+
+        if (preguntaActual < preguntas.length) {
+            mostrarPregunta();
+        } else {
+            finalizarJuego();
+        }
+    }
+
+    function finalizarJuego() {
+        cambiarPantalla('screen-result');
+        const textoResultado = document.getElementById('resultado-texto');
+        
+        // Calculamos la nota final real sobre 10 basándonos en los aciertos de las 7 preguntas
+        let nota = Math.round((aciertos / preguntas.length) * 10);
+
+        if (nota === 10) {
+            textoResultado.innerHTML = `⭐ <strong>¡EXCELENTE! (Nota: ${nota}/10)</strong> ⭐<br><br>¡Increíble! Os sabéis al pie de la letra el día a día de 6ºB. ¡Sois unos profesores de diez! ❤️`;
+            lluviaConfeti();
+        } else if (nota >= 7) {
+            textoResultado.innerHTML = `✨ <strong>¡NOTABLE! (Nota: ${nota}/10)</strong> ✨<br><br>¡Muy buen examen! Os acordáis de casi todo, aunque alguna que otra pregunta de la clase os ha pillado por sorpresa.`;
+        } else if (nota >= 5) {
+            textoResultado.innerHTML = `📝 <strong>APROBADO (Nota: ${nota}/10)</strong> 📝<br><br>¡Pasamos el corte por los pelos! Hay que prestar un poquito más de atención a los corrillos del aula. ¡Buen intento!`;
+        } else {
+            textoResultado.innerHTML = `📚 <strong>NECESITA MEJORAR (Nota: ${nota}/10)</strong> 📚<br><br>¡Vaya! Toca repasar a fondo las anécdotas y curiosidades de vuestros alumnos. ¡Seguro que en la próxima convocatoria sacáis mejor nota!`;
+        }
+    }
+
+    function lluviaConfeti() {
+        let duracion = 3 * 1000;
+        let fin = Date.now() + duracion;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 }
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 }
+            });
+
+            if (Date.now() < fin) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    }
+
+    function reiniciarJuego() {
+        cambiarPantalla('screen-start');
+    }
+</script>
+
+</body>
+</html>

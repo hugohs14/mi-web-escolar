@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Jubilación, Seño Cati!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            color: #333;
+            background-color: #fafafa;
+            padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .section {
+            margin: 40px auto;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #f472b6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .contador-box {
+            background: #fef2f2;
+            border: 2px dashed #f87171;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: bold;
+            color: #991b1b;
+            margin: 20px auto;
+            font-size: 1.1rem;
+        }
+
+        .frases-destacadas {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid #fee2e2;
+            margin: 25px 0;
+        }
+
+        .frase-badge {
+            display: inline-block;
+            font-weight: bold;
+            border-radius: 20px;
+            margin: 8px;
+            padding: 6px 14px;
+            font-size: 1.1rem;
+            color: #b91c1c;
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+        }
+
+        .card-homenaje {
+            background: linear-gradient(145deg, #ffffff 0%, #fff5f5 100%);
+            border-top: 4px solid #f87171;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .poem-body {
+            font-style: italic;
+            line-height: 2;
+            color: #4b5563;
+            font-size: 1.2rem;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #fca5a5;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-celebrar {
+            background: linear-gradient(135deg, #f472b6 0%, #f87171 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(244, 114, 182, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-celebrar:hover {
+            transform: scale(1.05);
+        }
+
+        .orla-container {
+            background: white;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .orla-firmas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 1.1rem;
+            color: #b91c1c;
+        }
+
+        .firma {
+            background: #fff5f5;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid #fee2e2;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .icono-flotante {
+            font-size: 3rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <div class="section">
+        <div class="icono-flotante">💝</div>
+        <h1 class="gradient-text" style="font-size: 2.5rem;">¡Feliz Jubilación, Seño Cati!</h1>
+        <h2>Tu clase de 6ºB nunca te va a olvidar</h2>
+        
+        <div class="contador-box">
+            ✨ Infinitas lecciones y años de dedicación escolar guardados en el corazón 🎁
+        </div>
+    </div>
+
+    <!-- FRASES MÍTICAS -->
+    <div class="section frases-destacadas">
+        <h3>🗣️ Tus frases grabadas a fuego:</h3>
+        <span class="frase-badge">"¡Recogiendo, que es gerundio!" 🎒</span>
+        <br>
+        <span class="frase-badge" style="background: #eff6ff; color: #1e40af; border-color: #bfdbfe;">
+            "Mano izda., mano derecha, arriba, en la punta de la nariz" 👃
+        </span>
+    </div>
+
+    <!-- EL POEMA DE DESPEDIDA -->
+    <div class="section card-homenaje">
+        <h3 style="color: #ef4444; margin-top: 0;">✍️ Versos para una Maestra Eterna</h3>
+        <br>
+        <div class="poem-body">
+            Entre letras, risas y cuadernos<br>
+            nos guiaste con paso firme y genial,<br>
+            tus consejos ya son eternos<br>
+            en nuestro viaje escolar.<br><br>
+            Hoy te despides de las pizarras<br>
+            con la mochila llena de amor,<br>
+            ¡toca descansar y abrir las alas,<br>
+            gracias por ser la mejor!
+        </div>
+    </div>
+
+    <!-- BOTÓN INTERACTIVO -->
+    <div class="section">
+        <button class="btn-celebrar" onclick="lanzarFiesta()">🎉 ¡Viva la Seño Cati! 🎉</button>
+    </div>
+
+    <!-- DEDICATORIA DE LA CLASE -->
+    <div class="section orla-container">
+        <h3>✍️ Tu última clase: 6ºB</h3>
+        <p>Tus alumnos firmamos aquí para desearte la mejor jubilación del mundo:</p>
+        <div class="orla-firmas">
+            <span class="firma">Zakaria 🚀</span> <span class="firma">Yanira 🎨</span> <span class="firma">Myriam 🍦</span>
+            <span class="firma">Manuel 🐰</span> <span class="firma">Ángela ⭐</span> <span class="firma">Lucía 🔍</span>
+            <span class="firma">Ainara 🦋</span> <span class="firma">Salma ✨</span> <span class="firma">Neymar 👟</span>
+            <span class="firma">Erik ❤️💙</span> <span class="firma">Adnan 💻</span> <span class="firma">Adrián 🧠</span>
+            <span class="firma">Martín 🛹</span> <span class="firma">Álex 🎾</span> <span class="firma">Teo ⚽</span>
+            <span class="firma">Hugo 🎸</span> <span class="firma">Charaf Din ⚡</span> <span class="firma">Diego 💩</span>
+            <span class="firma">Bruno 🏛️</span> <span class="firma">Reda 🏆</span> <span class="firma">Julia 🍀</span>
+            <span class="firma">Patricia 🎾</span> <span class="firma">Sofía 🎵</span> <span class="firma">Bianca 📝</span>
+            <span class="firma">Yanco 🚲</span> <span class="firma">Khalid 🧭</span> <span class="firma">Rachid 🎮</span>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <div class="section" style="margin-top: 50px; opacity: 0.8;">
+        <p><strong>¡A disfrutar de tu merecido descanso, Cati! 💕 2026</strong></p>
+    </div>
+
+    <script>
+        // Efecto de fuegos artificiales de confeti
+        function lanzarFiesta() {
+            var duration = 4 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+        
+        // Auto-lanzar un poquito al cargar
+        window.onload = function() {
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+        }
+    </script>
+</body>
+</html>

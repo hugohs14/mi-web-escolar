@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Gracias, Profes!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* --- ESTILOS GENERALES (DISEÑO CLÁSICO Y ACOGEDOR) --- */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            color: #333;
+            background-color: #fafafa;
+            padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .section {
+            margin: 50px auto;
+            max-width: 900px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 10px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        /* --- CONTROL DE MÚSICA --- */
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e9d5ff;
+        }
+
+        .music-btn {
+            background: #c084fc;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .music-btn:hover {
+            background: #f472b6;
+        }
+
+        /* --- RELOJ EN TIEMPO REAL --- */
+        .contador-box {
+            background: #eff6ff;
+            border: 2px dashed #60a5fa;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: bold;
+            color: #1e40af;
+            margin: 20px auto;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.1);
+        }
+
+        #relojTiempo {
+            color: #2563eb;
+            font-family: monospace;
+            font-size: 1.3rem;
+            background: white;
+            padding: 2px 10px;
+            border-radius: 6px;
+            margin-left: 5px;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* --- NOMBRES DESTACADOS (MENÚ INTERACTIVO) --- */
+        .directivos-group, .profesores-group {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            margin: 20px 0;
+            line-height: 2.5;
+        }
+
+        .profe-badge, .director-badge {
+            display: inline-block;
+            font-weight: bold;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .profe-badge {
+            font-size: 1.3rem;
+            color: #7c3aed;
+            background-color: #f3e8ff;
+            padding: 4px 12px;
+            border: 1px solid #e9d5ff;
+        }
+
+        .director-badge {
+            font-size: 1.4rem;
+            color: #db2777;
+            background-color: #fce7f3;
+            padding: 6px 16px;
+            border: 1px solid #fbcfe8;
+        }
+
+        .profe-badge:hover, .director-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .sustituto-text {
+            font-size: 1.1rem;
+            color: #4b5563;
+            font-style: italic;
+        }
+
+        /* --- TARJETA DE AGRADECIMIENTO Y POEMAS --- */
+        .dedication-card, .poem-card, .info-card {
+            background: #fff;
+            border: 1px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .dedication-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fdf4ff 100%);
+            border-top: 4px solid #c084fc;
+        }
+
+        .poem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .poem-card {
+            scroll-margin-top: 80px;
+            transition: background-color 0.5s, border-color 0.5s;
+        }
+
+        .poem-card:target {
+            background-color: #fff4ff;
+            border-color: #f472b6;
+            animation: targetHighlight 2s ease-in-out;
+        }
+
+        @keyframes targetHighlight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .poem-card h4 {
+            margin-top: 0;
+            color: #c084fc;
+            border-bottom: 2px dashed #f472b6;
+            padding-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .poem-body {
+            font-style: italic;
+            line-height: 1.8;
+            color: #4b5563;
+            font-size: 1.05rem;
+        }
+
+        /* --- SECCIÓN: ANECDOTARIO --- */
+        .anecdota-item {
+            text-align: left;
+            background: #fdf4ff;
+            border-left: 4px solid #f472b6;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* --- SECCIÓN: ORLA DE FIRMAS --- */
+        .orla-container {
+            background: white;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 25px;
+        }
+        .orla-firmas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 1.2rem;
+            color: #2563eb;
+        }
+        .firma {
+            background: #eff6ff;
+            padding: 5px 12px;
+            border-radius: 8px;
+            transform: rotate(-2deg);
+            display: inline-block;
+        }
+        .firma:nth-child(even) {
+            transform: rotate(3deg);
+            color: #7c3aed;
+            background: #f3e8ff;
+        }
+
+        /* --- DEDICATORIAS PUBLICADAS --- */
+        #listaDedicatorias {
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        .mensaje-publicado {
+            background: #fff;
+            border-left: 4px solid #c084fc;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .mensaje-publicado strong {
+            color: #f472b6;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        /* --- CARRUSEL DE FOTOS --- */
+        .album-carousel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+
+        .photo-container {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .arrow-btn {
+            background-color: #c084fc;
+            color: white;
+            border: none;
+            font-size: 22px;
+            padding: 12px 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .arrow-btn:hover {
+            background-color: #f472b6;
+        }
+
+        /* --- BOTÓN JUEGO SIMPLE --- */
+        .btn-juego-simple {
+            display: inline-block;
+            background-color: #16a34a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .btn-juego-simple:hover {
+            background-color: #15803d;
+        }
+
+        /* --- ANIMACIONES Y CORAZONES FLOTANTES DEL FONDO --- */
+        @keyframes floatingHearts {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-20px) rotate(10deg); opacity: 0.8; }
+            100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+        }
+
+        .heart-float {
+            display: inline-block;
+            animation: floatingHearts 4s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .sparkle { position: relative; }
+        .sparkle::before {
+            content: '✨';
+            position: absolute;
+            top: -10px; left: -15px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- REPRODUCTOR DE MÚSICA EMBEDDED -->
+    <div class="audio-control">
+        <span style="font-size: 1.1rem;">🎵</span>
+        <button class="music-btn" id="playBtn" onclick="toggleMúsica()">Play Música</button>
+        <audio id="bgMúsica" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <!-- CABECERA -->
+    <div class="section">
+        <p><span class="heart-float">🌟</span> <span class="heart-float" style="animation-delay: 1s;">💜</span> 📚 <span class="heart-float" style="animation-delay: 2s;">✨</span></p>
+        <h1 class="gradient-text sparkle">🎓 ¡Gracias, Profes!</h1>
+        <!-- ENLACES REDIRIGIDOS A WEBS EXTERNAS SIN TILDES -->
+        <h2>A <a href="damian.html" class="profe-badge" style="font-size: 1.5rem; background: #e0f2fe; color: #0369a1;">Damián</a>, nuestro tutor extraordinario</h2>
+        
+        <div class="contador-box">
+            ⏰ Llevamos juntos: <span id="relojTiempo">00d 00h 00m 00s</span> creándolo todo este curso 🚀
+        </div>
+
+        <div class="directivos-group">
+            <p><strong>Equipo Directivo:</strong><br>
+            <a href="begona.html" class="director-badge">Begoña (Directora) 🏫</a> 
+            <a href="ramon.html" class="profe-badge" style="background: #fef3c7; color: #b45309;">Ramón (Jefe de Estudios) 📝</a></p>
+        </div>
+
+        <div class="profesores-group">
+            <p><strong>Nuestros Maestros, Maestras y Amigos:</strong><br>
+            <!-- ENLACES REDIRIGIDOS A WEBS EXTERNAS SIN TILDES -->
+            <a href="cati.html" class="profe-badge">Cati 📚</a> 
+            <a href="mariluz.html" class="profe-badge">Mari Luz 🏃‍♀️</a> 
+            <a href="lola.html" class="profe-badge">Lola ✝️</a> 
+            <a href="paula.html" class="profe-badge">Paula 🎵</a> 
+            <a href="juan.html" class="profe-badge" style="background: #f0fdf4; color: #15803d; border-color: #bbf7d0;">Juan (Conserje y Amigo) 🔑</a><br>
+            
+            <span class="profe-badge">Alba 👶🕊️</span> 
+            <span class="sustituto-text">➔ Sustituta:</span> <a href="cristina_sustituta.html" class="profe-badge" style="background: #d1fae5; color: #065f46;">Seño Cristina (Sustituta de Alba) ✨</a><br>
+            
+            <span class="profe-badge">Cristina 🌍</span> 
+            <span class="sustituto-text">➔ Sustituta:</span> <a href="cristina_geografia.html" class="profe-badge" style="background: #d1fae5; color: #065f46;">Seño Cristina (Geografía/Voz de Alexa) ⭐</a><br>
+            
+            <a href="cristina_sociales.html" class="profe-badge" style="background: #fdf4ff; color: #7c3aed;">Seño Cristina (Ciencias Sociales) 📚</a>
+            
+            <a href="begonafrances.html" class="profe-badge" style="background: #e0f2fe; color: #0369a1;">Seño Begoña (Francés)</a>
+            </p>
+        </div>
+        
+        <p><strong>Con todo el cariño de antes 5ºB y ahora 6ºB | 2024-2026 💕</strong></p>
+    </div>
+
+    <!-- AGRADECIMIENTO -->
+    <div class="section dedication-card">
+        <p><span class="heart-float" style="font-size: 2rem;">💝</span></p>
+        <p>Queremos agradeceros de todo corazón por estos años maravillosos. A los que han estado desde el principio, a los que han venido a ayudarnos en el camino, y a quienes cuidan de todo el colegio desde el despacho y los pasillos. ¡Gracias por vuestra paciencia, vuestra dedicación y por creer siempre en nosotros!</p>
+        <p>⭐ <span class="heart-float">🌈</span> 🎨 📖 <span class="heart-float">💫</span></p>
+    </div>
+
+    <!-- SECCIÓN: ANECDOTARIO DE LA CLASE -->
+    <div class="section info-card">
+        <h3 class="gradient-text">💬 El Anecdotario de 6ºB</h3>
+        <p>Esos pequeños y divertidos momentos que siempre recordaremos de nuestras clases:</p>
+        <div class="anecdota-item">
+            <strong>🔴 Hora de corregir:</strong> Cuando llega el momento de revisar los exámenes en clase, siempre suena con fuerza el mítico grito de guerra: <strong>"¡Put your red up!"</strong> 🖊️
+        </div>
+        <div class="anecdota-item">
+            <strong>⏰ El final de las clases:</strong> En cuanto toca el timbre y se acaba el colegio, no falta la seño Cati diciendo su mítica frase: <strong>"¡Recogiendo, que es gerundio!"</strong> 🎒 En sus clases también se escucha: <strong>"Mano izda., mano derecha, arriba, en la punta de la nariz"</strong>.
+        </div>
+        <div class="anecdota-item">
+            <strong>🗣️ El talento secreto de Geografía:</strong> La seño Cristina (sustituta de Cristina) nos deja con la boca abierta: ¡sabe imitar a la perfección **la voz de Alexa y la voz de Google Maps**! 🗺️🤖
+        </div>
+        <div class="anecdota-item">
+            <strong>🧠 Las explicaciones geniales:</strong> Cuando un tema parecía imposible y nuestros profes conseguían que lo entendiéramos con una sonrisa y trucos geniales.
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE POEMAS -->
+    <div class="section">
+        <h3 class="gradient-text">✍️ Versos del Corazón</h3>
+        <p>Un poema especial de dos estrofas dedicado a cada uno de vuestros maestros y seres queridos</p>
+
+        <div class="poem-grid">
+            <div class="poem-card" id="p-damian">
+                <h4>Maestro Damián 🇬🇧</h4>
+                <div class="poem-body">
+                    Tutor, maestro y gran guía,<br>
+                    con ciencia, inglés y arte,<br>
+                    nos enseñas cada día<br>
+                    ¡es imposible olvidarte!<br><br>
+                    Dos años de ruta compartida,<br>
+                    de risas, esfuerzo y atención,<br>
+                    dejando una huella encendida<br>
+                    dentro de nuestro corazón.
+                </div>
+            </div>
+            <div class="poem-card" id="p-begona-dir">
+                <h4>Directora Begoña 🏫</h4>
+                <div class="poem-body">
+                    Diriges con gran salero<br>
+                    el timón de nuestra escuela,<br>
+                    por eso todo el colegio<br>
+                    te admira y te respeta.<br><br>
+                    Cuidando siempre los detalles<br>
+                    desde tu despacho con amor,<br>
+                    haces que la magia nunca falle<br>
+                    en las aulas de nuestro alrededor.
+                </div>
+            </div>
+            <div class="poem-card" id="p-ramon">
+                <h4>Maestro Ramón 📝</h4>
+                <div class="poem-body">
+                    Jefe de Estudios atento<br>
+                    que todo lo organiza,<br>
+                    nos cuida en todo momento<br>
+                    con paciencia y una sonrisa.<br><br>
+                    Tus folios llenos de horarios,<br>
+                    tu ayuda constante y formal,<br>
+                    son los pilares diarios<br>
+                    de este curso tan especial.
+                </div>
+            </div>
+            
+            <!-- EL POEMA DE CATI SE QUEDA AQUÍ TAMBIÉN POR SI ALGUIEN BAJA HACIENDO SCROLL -->
+            <div class="poem-card" id="p-cati">
+                <h4>Seño Cati 📚</h4>
+                <div class="poem-body">
+                    Entre letras y cuadernos<br>
+                    nos abriste un gran camino,<br>
+                    tus consejos son eternos<br>
+                    ¡gracias por haber venido!<br><br>
+                    "Recogiendo que es gerundio",<br>
+                    nos dices siempre al final,<br>
+                    dejando en cada segundo<br>
+                    una lección principal.
+                </div>
+            </div>
+            
+            <div class="poem-card" id="p-mariluz">
+                <h4>Seño Mari Luz 🏃‍♀️</h4>
+                <div class="poem-body">
+                    Corriendo y saltando al sol<br>
+                    la energía nunca para,<br>
+                    nos enseñas con valor<br>
+                    ¡y alegría en la cara!<br><br>
+                    Tus clases son puro movimiento,<br>
+                    deporte, trabajo en equipo y acción,<br>
+                    llenando de fuerza el momento<br>
+                    y de juegos nuestra recreación.
+                </div>
+            </div>
+            <div class="poem-card" id="p-lola">
+                <h4>Seño Lola ✝️</h4>
+                <div class="poem-body">
+                    Con palabras de bondad<br>
+                    y valores en la mesa,<br>
+                    nos das siempre tu amistad<br>
+                    y una enorme gentileza.<br><br>
+                    Enseñas desde la empatía,<br>
+                    haciendo que el aula sea un hogar,<br>
+                    con calma, ternura y alegría<br>
+                    que nunca vamos a olvidar.
+                </div>
+            </div>
+            <div class="poem-card" id="p-paula">
+                <h4>Seño Paula 🎵</h4>
+                <div class="poem-body">
+                    Tus notas llenan el aula<br>
+                    de música y de color,<br>
+                    gracias, querida Paula,<br>
+                    por cantar con tanto amor.<br><br>
+                    Flautas, ritmos y canciones<br>
+                    que aprendimos a entonar,<br>
+                    tocas nuestras emociones<br>
+                    con tu forma de anunciar.
+                </div>
+            </div>
+            <div class="poem-card" id="p-juan">
+                <h4>Juan el Conserje 🔑</h4>
+                <div class="poem-body">
+                    Cuidas puertas y pasillos<br>
+                    con gran maña y alegría,<br>
+                    haciendo todo más sencillo<br>
+                    a la clase cada día.<br><br>
+                    Más que un conserje atento,<br>
+                    eres un amigo genial,<br>
+                    que nos regala su tiempo<br>
+                    con un cariño especial.
+                </div>
+            </div>
+            <div class="poem-card" id="p-alba-cristina">
+                <h4>Alba y Seño Cristina ✨</h4>
+                <div class="poem-body">
+                    A Alba un bebé le espera<br>
+                    y alegría en su hogar,<br>
+                    y Cristina es la compañera<br>
+                    que nos viene a anunciar.<br><br>
+                    A una le deseamos lo mejor<br>
+                    en esta dulce y tierna espera,<br>
+                    y a la otra le abrimos con honor<br>
+                    nuestra clase entera.
+                </div>
+            </div>
+            <div class="poem-card" id="p-cris-geografia">
+                <h4>Las Seños Cristina 🌍</h4>
+                <div class="poem-body">
+                    A una la esperamos siempre<br>
+                    con ganas de verla entrar,<br>
+                    y la otra nos da la vida<br>
+                    con mapas para viajar.<br><br>
+                    Entre ríos, climas y sectores<br>
+                    aprendemos Ciencias Sociales,<br>
+                    ambas seños son las mejores<br>
+                    con lecciones fundamentales.
+                </div>
+            </div>
+            <div class="poem-card" id="p-begona-frances">
+                <h4>Seño Begoña 🇨🇦</h4>
+                <div class="poem-body">
+                    <i>"Bonjour"</i> nos dice Begoña<br>
+                    compartiendo su gran saber,<br>
+                    idiomas que con paciencia<br>
+                    nos enseña a comprender.<br><br>
+                    Con acento de Francia viajamos,<br>
+                    abriendo la mente al mañana,<br>
+                    lecciones que siempre guardamos<br>
+                    con un cariño que gana.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUESTRA ORLA DE FIRMAS -->
+    <div class="section info-card">
+        <h3 class="gradient-text">✍️ Nuestra Orla de Firmas</h3>
+        <p>Dejamos nuestro nombre grabado como un recuerdo imborrable de nuestra unión:</p>
+        <div class="orla-container">
+            <div style="font-size: 3rem; margin-bottom: 15px;" class="heart-float">✨</div>
+            <div class="orla-firmas">
+                <span class="firma">Zakaria 🚀</span>
+                <span class="firma">Yanira 🎨</span>
+                <span class="firma">Myriam 🍦</span>
+                <span class="firma">Manuel 🐰</span>
+                <span class="firma">Ángela ⭐</span>
+                <span class="firma">Lucía 🔍</span>
+                <span class="firma">Ainara 🦋</span>
+                <span class="firma">Salma ✨</span>
+                <span class="firma">Neymar 👟</span>
+                <span class="firma">Erik ❤️💙</span>
+                <span class="firma">Adnan 💻</span>
+                <span class="firma">Adrián 🧠</span>
+                <span class="firma">Martín 🛹</span>
+                <span class="firma">Álex 🎾</span>
+                <span class="firma">Teo ⚽</span>
+                <span class="firma">Hugo 🎸</span>
+                <span class="firma">Charaf Din ⚡</span>
+                <span class="firma">Diego 💩</span>
+                <span class="firma">Bruno 🏛️</span>
+                <span class="firma">Reda 🏆</span>
+                <span class="firma">Julia 🍀</span>
+                <span class="firma">Patricia 🎾</span>
+                <span class="firma">Sofía 🎵</span>
+                <span class="firma">Bianca 📝</span>
+                <span class="firma">Yanco 🚲</span>
+                <span class="firma">Khalid 🧭</span>
+                <span class="firma">Rachid 🎮</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEDICATORIAS -->
+    <div class="section">
+        <h3>Nuestras Dedicatorias</h3>
+        <p>Mensajes de todo el grupo para los maestros</p>
+        
+        <div class="dedication-card" style="max-width: 400px; margin: 0 auto;">
+            <h4>✏️ Escribe tu dedicatoria</h4>
+            <p>Tu nombre <br><input type="text" id="inputNombre" style="width: 80%; padding: 5px; border-radius: 4px; border: 1px solid #ddd;"></p>
+            <p>Tu mensaje <br><textarea id="inputMensaje" style="width: 80%; height: 60px; padding: 5px; border-radius: 4px; border: 1px solid #ddd;"></textarea></p>
+            <button onclick="publicarDedicatoria()" style="background: #60a5fa; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">💌 Enviar dedicatoria</button>
+        </div>
+
+        <p id="mensajeVacio" style="color: #c084fc; margin-top: 15px;">¡Sé el primero en escribir una dedicatoria! ✨</p>
+        <div id="listaDedicatorias"></div>
+    </div>
+
+    <!-- ÁLBUM DE FOTOS -->
+    <div class="section">
+        <h3>📸 Nuestro Álbum</h3>
+        <p>Recuerdos inolvidables juntos</p>
+        
+        <div class="album-carousel">
+            <button class="arrow-btn" onclick="cambiarFoto(-1)">❮</button>
+            <div class="photo-container">
+                <img id="fotoActual" src="https://i.ibb.co/7JWFd8dX/san-patricio.jpg" alt="Recuerdo escolar">
+            </div>
+            <button class="arrow-btn" onclick="cambiarFoto(1)">❯</button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: METAS HACIA LA ESO -->
+    <div class="section info-card" style="background: linear-gradient(135deg, #eff6ff 0%, #fdf4ff 100%); border: 1px solid #bfdbfe;">
+        <h3 class="gradient-text">🎓 Próximas Metas: Hacia la ESO</h3>
+        <p style="font-size: 1.1rem; line-height: 1.7; color: #4b5563; max-width: 750px; margin: 0 auto;">
+            Se acerca el momento de dar el gran salto al instituto. Nos llevamos una mochila cargada de conocimientos, pero sobre todo, llena de valores, risas y valiosas lecciones de vida. Gracias por prepararnos con tanto cariño para nuestro futuro. ¡Esta base siempre irá con nosotros en la nueva etapa de la ESO!
+        </p>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <div class="section">
+        <p><span class="heart-float" style="font-size: 2rem;">🌟</span></p>
+        <h3 class="gradient-text">¡Os queremos mucho, profesores!</h3>
+        <p>Con todo nuestro cariño y agradecimiento</p>
+        
+        <!-- ENLACE DEL BOTÓN DEL JUEGO AL FINAL DE LA PÁGINA -->
+        <a href="juego.html" class="btn-juego-simple">ahora...¡a jugar!</a>
+        
+        <p>🌟 💜 🎓 💜 🌟</p>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- CONTROL DE MÚSICA ---
+        function toggleMúsica() {
+            const miMúsica = document.getElementById("bgMúsica");
+            const btn = document.getElementById("playBtn");
+            
+            if (miMúsica.paused) {
+                miMúsica.play();
+                btn.innerText = "⏸ Mute Música";
+                btn.style.background = "#f472b6";
+            } else {
+                miMúsica.pause();
+                btn.innerText = "🎵 Play Música";
+                btn.style.background = "#c084fc";
+            }
+        }
+
+        // --- RELOJ EN TIEMPO REAL ---
+        const fechaInicioCurso = new Date("2025-09-01T00:00:00").getTime();
+
+        function actualizarContador() {
+            const ahora = new Date().getTime();
+            const tiempoTranscurrido = ahora - fechaInicioCurso;
+
+            const dias = Math.floor(tiempoTranscurrido / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((tiempoTranscurrido % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((tiempoTranscurrido % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((tiempoTranscurrido % (1000 * 60)) / 1000);
+
+            const hDisplay = horas < 10 ? "0" + horas : horas;
+            const mDisplay = minutes = minutos < 10 ? "0" + minutos : minutos;
+            const sDisplay = segundos < 10 ? "0" + segundos : segundos;
+
+            document.getElementById("relojTiempo").innerText = `${dias}d ${hDisplay}h ${mDisplay}m ${sDisplay}s`;
+        }
+
+        setInterval(actualizarContador, 1000);
+        actualizarContador();
+
+        // --- DEDICATORIAS Y CONFETI ---
+        function publicarDedicatoria() {
+            const nombre = document.getElementById("inputNombre").value.trim();
+            const mensaje = document.getElementById("inputMensaje").value.trim();
+
+            if (nombre === "" || mensaje === "") {
+                alert("Por favor, rellena tu nombre y el mensaje antes de enviar. 😊 De La Familia: 6ºB");
+                return;
+            }
+
+            document.getElementById("mensajeVacio").style.display = "none";
+
+            const contenedor = document.getElementById("listaDedicatorias");
+            const nuevaTarjeta = document.createElement("div");
+            nuevaTarjeta.className = "mensaje-publicado";
+            nuevaTarjeta.innerHTML = `<strong>✍️ de ${nombre}:</strong> ${mensaje}`;
+
+            contenedor.insertBefore(nuevaTarjeta, contenedor.firstChild);
+
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+            document.getElementById("inputNombre").value = "";
+            document.getElementById("inputMensaje").value = "";
+        }
+
+        // --- CARRUSEL DE FOTOS ---
+        const fotos = [
+            "https://i.ibb.co/7JWFd8dX/san-patricio.jpg", 
+            "https://i.postimg.cc/sfQP1G3g/17-feb-2026-a-la(s)-15-29(14).jpg", 
+            "https://i.postimg.cc/G2Y2nRnq/17-feb-2026-a-la(s)-15-29(8).jpg", 
+            "https://i.postimg.cc/SxJmp4WT/6-feb-2026-a-la(s)-15-07(2).jpg", 
+            "https://i.postimg.cc/1zDh934D/6-feb-2026-a-la(s)-15-07(12).jpg", 
+            "https://i.postimg.cc/3xpbGb7H/2-feb-2026-a-la(s)-15-03(12).jpg", 
+            "https://i.postimg.cc/K8nJjkrG/Feliz-Navidad.jpg", 
+            "https://i.postimg.cc/FzNJPzk2/IMG-20251212-WA0023.jpg", 
+            "https://i.postimg.cc/05VQgcTm/PXL-20251203-113306230.jpg", 
+            "https://i.postimg.cc/rwxMpJPx/24-jun-2025-a-la(s)-14-16.jpg", 
+            "https://i.postimg.cc/FHBW25ZG/PXL-20250624-080310460-MP.jpg", 
+            "https://i.postimg.cc/ydzPHVST/6-jun-2025-a-la(s)-14-52(3).jpg", 
+            "https://i.postimg.cc/cJTHshvf/DSC-0338.jpg", 
+            "https://i.postimg.cc/qBW8VBV3/IMG-20250324-105359.jpg", 
+            "https://i.postimg.cc/q77t6WVx/28-feb-2025-a-la(s)-17-57(13).jpg", 
+            "https://i.postimg.cc/PJbfRMn6/IMG-20241221-WA0032.jpg", 
+            "https://i.postimg.cc/QMZ4Xg2d/IMG-20241220-122241.jpg", 
+            "https://i.postimg.cc/L8LD0YJn/IMG-20241220-104957.jpg", 
+            "https://i.postimg.cc/VNbJFnvb/IMG-20241218-121927.jpg"
+        ];
+        
+        let indiceActual = 0;
+
+        fotos.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        function cambiarFoto(direccion) {
+            indiceActual += direccion;
+            if (indiceActual >= fotos.length) indiceActual = 0;
+            if (indiceActual < 0) indiceActual = fotos.length - 1;
+            document.getElementById("fotoActual").src = fotos[indiceActual];
+        }
+    </script>
+
+</body>
+</html>
